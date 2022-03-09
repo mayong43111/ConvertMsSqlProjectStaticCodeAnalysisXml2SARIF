@@ -1,0 +1,15 @@
+{
+  "name": "convert-mssql-analysis-xml-2-sarif",
+  "version": "0.0.1",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mayong43111/ConvertMsSqlProjectStaticCodeAnalysisXml2SARIF.git"
+  },
+  "author": "YongMa",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mayong43111/ConvertMsSqlProjectStaticCodeAnalysisXml2SARIF/issues"
+  },
+  "homepage": "https://github.com/mayong43111/ConvertMsSqlProjectStaticCodeAnalysisXml2SARIF#readme"
+}

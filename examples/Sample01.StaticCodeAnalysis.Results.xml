@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Problems>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0009</Rule>
+    <ProblemDescription>Avoid NVARCHAR of only 2 elements.</ProblemDescription>
+    <SourceFile>/examples/Sample01.sql</SourceFile>
+    <Line>4</Line>
+    <Column>14</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+</Problems>
