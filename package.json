@@ -2,6 +2,17 @@
   "name": "convert-mssql-analysis-xml-2-sarif",
   "version": "0.0.1",
   "description": "",
+  "bin": "dist/main.js",
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "clean:release": "rimraf ./release",
+    "compile": "webpack --mode production",
+    "compile:dev": "webpack --mode development",
+    "pkg": "pkg . --out-path=release/",
+    "build": "npm run clean && npm run compile",
+    "build:dev": "npm run clean && npm run compile:dev",
+    "release": "npm run clean:release && npm run build && npm run pkg"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mayong43111/ConvertMsSqlProjectStaticCodeAnalysisXml2SARIF.git"
@@ -11,5 +22,17 @@
   "bugs": {
     "url": "https://github.com/mayong43111/ConvertMsSqlProjectStaticCodeAnalysisXml2SARIF/issues"
   },
-  "homepage": "https://github.com/mayong43111/ConvertMsSqlProjectStaticCodeAnalysisXml2SARIF#readme"
+  "homepage": "https://github.com/mayong43111/ConvertMsSqlProjectStaticCodeAnalysisXml2SARIF#readme",
+  "devDependencies": {
+    "@types/node": "^17.0.21",
+    "pkg": "^5.5.2",
+    "rimraf": "^3.0.2",
+    "ts-loader": "^9.2.7",
+    "typescript": "^4.6.2",
+    "webpack": "^5.70.0",
+    "webpack-cli": "^4.9.2"
+  },
+  "dependencies": {
+    "commander": "^9.0.0"
+  }
 }
