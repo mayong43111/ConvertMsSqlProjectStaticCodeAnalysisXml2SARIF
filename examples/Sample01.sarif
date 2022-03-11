@@ -24,7 +24,7 @@
             "artifacts": [
                 {
                     "location": {
-                        "uri": "/examples/Sample01.sql"
+                        "uri": "examples/Sample01.sql"
                     }
                 }
             ],
@@ -38,7 +38,7 @@
                         {
                             "physicalLocation": {
                                 "artifactLocation": {
-                                    "uri": "/examples/Sample01.sql",
+                                    "uri": "examples/Sample01.sql",
                                     "index": 0
                                 },
                                 "region": {
