@@ -10,7 +10,7 @@ export function convert(options?: ConvertOption) {
 function checkAndPostOptions(options?: ConvertOption) {
 
     if (!options) {
-        console.error(`options is null.`)
+        console.error(`${options!.SourceFormat} is null.`)
         return false;
     }
 }

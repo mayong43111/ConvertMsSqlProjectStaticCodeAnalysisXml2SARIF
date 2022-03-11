@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  CodeQL-Build:
+  ESLint-Scanning:
 
     runs-on: [self-hosted]
 
