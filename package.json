@@ -1,5 +1,5 @@
 {
-  "name": "convert-mssql-analysis-xml-2-sarif",
+  "name": "sqlproj-code-analysis-action",
   "version": "0.0.1",
   "description": "",
   "bin": "dist/main.js",
@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/mayong43111/ConvertMsSqlProjectStaticCodeAnalysisXml2SARIF#readme",
   "devDependencies": {
+    "@types/commander": "^2.12.2",
     "@types/node": "^17.0.21",
     "pkg": "^5.5.2",
     "rimraf": "^3.0.2",

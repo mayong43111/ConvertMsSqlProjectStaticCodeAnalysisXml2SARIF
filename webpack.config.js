@@ -1,12 +1,12 @@
 const path = require('path');
 
 module.exports = {
-    entry: './src/main.ts',
+    entry: './src/command/index.ts',
     target: 'node',
     devtool: 'source-map',
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: "main.js"
+        filename: "sqlproj-analysis.js"
     },
     resolve: {
         extensions: [".ts", ".tsx", ".js"]
