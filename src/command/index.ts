@@ -13,6 +13,6 @@ program.command('convert')
     .option('-s, --SourcePath <char>')
     .option('-t, --TargetPath <char>')
     .option('-f, --SourceFormat <char>', 'source format', 'msbuild')
-    .action((options: ConvertOption) => { convert(options) });
+    .action((options: ConvertOption) => { convert(options); });
 
 program.parse();

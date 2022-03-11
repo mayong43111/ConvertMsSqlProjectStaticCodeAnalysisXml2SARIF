@@ -10,9 +10,7 @@ export function convert(options?: ConvertOption) {
 function checkAndPostOptions(options?: ConvertOption) {
 
     if (!options) {
-
-        console.error(`${options!.SourcePath} is not exists.`)
+        console.error(`options is null.`)
         return false;
     }
-
 }
