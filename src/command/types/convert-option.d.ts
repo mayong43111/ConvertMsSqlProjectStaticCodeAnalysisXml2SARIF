@@ -1,8 +1,17 @@
 export interface ConvertOption {
 
-    SourcePath: string;
+    SourcePath?: string;
 
     TargetPath?: string;
 
-    SourceFormat: 'msbuild' | '';
+    SourceFormat?: string;
+}
+
+export interface PostConvertOption {
+
+    SourcePath: string;
+
+    TargetPath: string;
+
+    SourceFormat: string;
 }

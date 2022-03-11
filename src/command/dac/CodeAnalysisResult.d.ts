@@ -3,7 +3,7 @@ export interface CodeAnalysisResult {
 }
 
 export interface Problems {
-    Problem: Problem;
+    Problem: Problem | Problem[];
 }
 
 export interface Problem {
