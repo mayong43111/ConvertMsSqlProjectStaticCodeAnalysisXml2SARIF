@@ -1,0 +1,39 @@
+name: "Code Scanning - ESLint"
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  ESLint-Scanning:
+
+    runs-on: [self-hosted]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup Node
+      uses: actions/setup-node@v2
+      with:
+          node-version: 16
+          cache: 'npm'
+
+    - name: install node_modules
+      run: npm install
+
+    - name: Generate Static Code Analysis Result
+      run: npm run lint
+
+    - name: Upload SARIF to GitHub
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: ./dist/command.sarif
+        category: eslint
+
+    # - uses: actions/upload-artifact@v3
+    #   with:
+    #     name: code-sarif
+    #     path: ./dist/command.sarif
