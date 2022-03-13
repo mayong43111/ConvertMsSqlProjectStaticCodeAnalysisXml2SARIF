@@ -13,7 +13,8 @@
     "pkg": "pkg . --out-path=release/",
     "build": "npm run clean && npm run compile",
     "build:dev": "npm run clean && npm run compile:dev",
-    "release": "npm run clean:release && npm run build && npm run pkg"
+    "release": "npm run clean:release && npm run build && npm run pkg",
+    "generate:SARIF": "json2ts ./src/command/sarif/sarif2.schema.json ./src/command/sarif/sarif2.d.ts"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,7 @@
     "@typescript-eslint/eslint-plugin": "^5.14.0",
     "@typescript-eslint/parser": "^5.14.0",
     "eslint": "^7.32.0",
+    "json-schema-to-typescript": "^10.1.5",
     "pkg": "^5.5.2",
     "rimraf": "^3.0.2",
     "ts-loader": "^9.2.7",

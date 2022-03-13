@@ -1,8 +1,8 @@
 import fs from "fs";
 import path from "path";
-import { parseString } from 'xml2js';
-import { CodeAnalysisResult, Problem } from "./dac/CodeAnalysisResult";
-import { Sarif } from "./sarif/Sarif2";
+import { convert2sarfi } from "./convert.interface";
+import { convertMsBuildXml } from "./dac/msbuild-convert";
+import { Sarif } from "./sarif/sarif2";
 import { ConvertOption, PostConvertOption } from "./types/convert-option";
 
 export function convert(options?: ConvertOption): void {
@@ -83,42 +83,20 @@ function convertFileToSARIF(opt: PostConvertOption) {
             console.error('source file is empty.');
         } else {
 
+            let converter: convert2sarfi;
+
             switch (opt.SourceFormat) {
                 case 'msbuild':
-                    convertMsBuildXml(data, (content) => saveSARIF(content, opt));
+                    converter = convertMsBuildXml;
                     break;
                 default:
                     console.error(`${opt.SourceFormat} not implemented`);
+                    return;
             }
 
-
+            converter(data, (content: Sarif) => saveSARIF(content, opt));
         }
     });
-}
-
-function convertMsBuildXml(data: Buffer, complateCallback: (content: Sarif) => void) {
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    parseString(data.toString(), { ignoreAttrs: true, explicitArray: false }, (err, res: CodeAnalysisResult) => {
-
-        if (err) {
-            console.error(err);
-        } else {
-
-            if (!res || !res.Problems || !res.Problems.Problem) {
-                throw new Error("Function not implemented.");
-            } else if (!(res.Problems.Problem instanceof Array)) {
-                res.Problems.Problem = [res.Problems.Problem];
-            }
-
-            const result = generateFormProblems(res.Problems.Problem);
-            complateCallback(result);
-        }
-    });
-}
-
-function generateFormProblems(problem: Problem[]): Sarif {
-    throw new Error("Function not implemented.");
 }
 
 function saveSARIF(sarif: Sarif, opt: PostConvertOption) {

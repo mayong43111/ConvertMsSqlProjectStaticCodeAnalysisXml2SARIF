@@ -1,0 +1,1 @@
+export type convert2sarfi = (data: Buffer, success: (content: Sarif) => void) => void;
