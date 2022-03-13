@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
     entry: './src/command/main.ts',
@@ -21,5 +22,8 @@ module.exports = {
                 loader: "ts-loader"
             }
         ]
-    }
+    },
+    plugins: [
+        new webpack.BannerPlugin({ banner: "#!/usr/bin/env node", raw: true }),
+    ]
 };

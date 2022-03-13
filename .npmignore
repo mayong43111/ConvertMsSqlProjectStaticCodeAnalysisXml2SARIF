@@ -1,0 +1,11 @@
+.github
+.vscode
+examples
+src
+node_modules
+.eslintignore
+.eslintrc.js
+.gitignore
+package-lock.json
+tsconfig.json
+webpack.config.js
