@@ -12,7 +12,7 @@ export function convert(options?: ConvertOption): void {
         return;
     }
 
-    fs.rm(opt.TargetPath, { force: true }, (err) => {
+    fs.rm(opt.OutfilePath, { force: true }, (err) => {
 
         if (!err) {
             convertFileToSARIF(opt);
@@ -58,17 +58,17 @@ function checkAndPostOptions(options?: ConvertOption): PostConvertOption | null 
         return null;
     }
 
-    if (!options.TargetPath) {
-        options.TargetPath = path.join(path.dirname(options.SourcePath), path.basename(options.SourcePath, '.xml')) + '.sarif';
-    } else if (path.extname(options.TargetPath).toLowerCase() != '.sarif') {
-        console.error(`${options.SourcePath} extname is not sarif.`)
+    if (!options.OutfilePath) {
+        options.OutfilePath = path.join(path.dirname(options.SourcePath), path.basename(options.SourcePath, '.xml')) + '.sarif';
+    } else if (path.extname(options.OutfilePath).toLowerCase() != '.sarif') {
+        console.error(`${options.OutfilePath} extname is not sarif.`)
         return null;
     }
 
     return {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         SourcePath: options.SourcePath,
-        TargetPath: options.TargetPath,
+        OutfilePath: options.OutfilePath,
         SourceFormat: options.SourceFormat
     };
 }
@@ -104,8 +104,8 @@ function saveSARIF(sarif: Sarif, opt: PostConvertOption) {
     if (sarif) {
         const content = JSON.stringify(sarif);
 
-        fs.writeFile(opt.TargetPath, content, { encoding: 'utf-8' }, () => {
-            console.log(`${opt.TargetPath} were generated`);
+        fs.writeFile(opt.OutfilePath, content, { encoding: 'utf-8' }, () => {
+            console.log(`${opt.OutfilePath} were generated`);
         });
     } else {
         console.error(`No files were generated.`);

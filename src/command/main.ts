@@ -11,7 +11,7 @@ program
 
 program.command('convert')
     .requiredOption('-s, --SourcePath <path>')
-    .option('-t, --TargetPath <path>')
+    .option('-o, --OutfilePath <path>')
     .addOption(
         new Option('-f, --SourceFormat <type>', 'source format')
             .choices(['msbuild'])
