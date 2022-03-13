@@ -13,7 +13,8 @@
     "pkg": "pkg . --out-path=release/",
     "build": "npm run clean && npm run compile",
     "build:dev": "npm run clean && npm run compile:dev",
-    "release": "npm run clean:release && npm run build && npm run pkg"
+    "release": "npm run clean:release && npm run build && npm run pkg",
+    "generate:SARIF": "json2ts ./src/command/sarif/sarif2.schema.json ./src/command/sarif/sarif2.d.ts"
   },
   "repository": {
     "type": "git",
@@ -29,9 +30,11 @@
     "@microsoft/eslint-formatter-sarif": "^2.1.7",
     "@types/commander": "^2.12.2",
     "@types/node": "^17.0.21",
+    "@types/xml2js": "^0.4.9",
     "@typescript-eslint/eslint-plugin": "^5.14.0",
     "@typescript-eslint/parser": "^5.14.0",
     "eslint": "^7.32.0",
+    "json-schema-to-typescript": "^10.1.5",
     "pkg": "^5.5.2",
     "rimraf": "^3.0.2",
     "ts-loader": "^9.2.7",
@@ -40,6 +43,7 @@
     "webpack-cli": "^4.9.2"
   },
   "dependencies": {
-    "commander": "^9.0.0"
+    "commander": "^9.0.0",
+    "xml2js": "^0.4.23"
   }
 }

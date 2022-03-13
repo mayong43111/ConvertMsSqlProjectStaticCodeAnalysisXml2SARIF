@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import { convert } from './convert';
 import { ConvertOption } from './types/convert-option';
 
@@ -10,9 +10,13 @@ program
 
 
 program.command('convert')
-    .option('-s, --SourcePath <char>')
-    .option('-t, --TargetPath <char>')
-    .option('-f, --SourceFormat <char>', 'source format', 'msbuild')
-    .action((options: ConvertOption) => { convert(options); });
+    .requiredOption('-s, --SourcePath <path>')
+    .option('-o, --OutfilePath <path>')
+    .addOption(
+        new Option('-f, --SourceFormat <type>', 'source format')
+            .choices(['msbuild'])
+            .default('msbuild')
+    )
+    .action((options: ConvertOption) => { return convert(options); });
 
 program.parse();
