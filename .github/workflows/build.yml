@@ -1,4 +1,4 @@
-name: "Code Scanning - ESLint"
+name: "Build"
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  ESLint-Scanning:
+  Build:
 
     runs-on: [self-hosted]
 
@@ -25,10 +25,4 @@ jobs:
       run: npm install
 
     - name: Generate Static Code Analysis Result
-      run: npm run lint
-
-    - name: Upload SARIF to GitHub
-      uses: github/codeql-action/upload-sarif@v1
-      with:
-        sarif_file: ./dist/command.sarif
-        category: eslint
+      run: npm run build
