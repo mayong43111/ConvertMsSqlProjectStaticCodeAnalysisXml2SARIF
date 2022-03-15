@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { convert2sarfi } from "./convert.interface";
+import { convert2sarfi } from "./types/tools.interface";
 import { convertMsBuildXml } from "./dac/msbuild-convert";
 import { Sarif } from "./sarif/sarif2";
 import { ConvertOption, PostConvertOption } from "./types/convert-option";

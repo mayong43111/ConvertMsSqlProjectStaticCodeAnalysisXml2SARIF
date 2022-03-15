@@ -20,6 +20,10 @@ The custom code is for DB150 only, unless you upgrade the SDK yourself.
 sqlproj-analysis convert -s xx.result.StaticCodeAnalysis.Results.xml -o xx.sarif
 ```
 
+```
+sqlproj-analysis where
+```
+
 ### Prerequisites
 
 You need install NodeJs 
