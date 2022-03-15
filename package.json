@@ -1,6 +1,6 @@
 {
   "name": "sqlproj-analysis-cli",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "",
   "bin": {
     "sqlproj-analysis": "dist/sqlproj-analysis.js"
@@ -45,6 +45,7 @@
     "webpack-cli": "^4.9.2"
   },
   "dependencies": {
+    "@actions/exec": "^1.1.0",
     "commander": "^9.0.0",
     "xml2js": "^0.4.23"
   }

@@ -2,7 +2,7 @@ import { parseString } from 'xml2js';
 import { Artifact, ReportingDescriptor, Run, Sarif } from '../sarif/sarif2';
 import { CodeAnalysisResult, Problem } from './CodeAnalysisResult';
 
-export function convertMsBuildXml(data: Buffer, complateCallback: (content: Sarif) => void) {
+export function convertMsBuildXml(data: Buffer, success?: (content: Sarif) => void) {
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     parseString(data.toString(), { ignoreAttrs: true, explicitArray: false }, (err, res: CodeAnalysisResult) => {
@@ -23,7 +23,10 @@ export function convertMsBuildXml(data: Buffer, complateCallback: (content: Sari
             }
 
             analysisProblems(result, problems);
-            complateCallback(result);
+
+            if (success) {
+                success(result);
+            }
         }
     });
 }
