@@ -151,7 +151,7 @@ function findInstallationPath(opt: PostWhereOption, success: (installationPath: 
         command += `-version "${opt.VsVersion}" `
     }
 
-    const options: ExecOptions = {}
+    const options: ExecOptions = { silent: true }
     options.listeners = {
         stdout: (data: Buffer) => {
             success(data.toString().trim())
