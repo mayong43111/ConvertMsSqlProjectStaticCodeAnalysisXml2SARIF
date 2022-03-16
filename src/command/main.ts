@@ -28,8 +28,8 @@ program.command('where')
     .option('-w, --VsWhere <path>', 'manually set the path of vswhere')
     .option('-v, --VsVersion <version>', 'set vs version', 'latest')
     .addOption(
-        new Option('-e, --ExeType <type>', 'application type')
-            .choices(['msbuild', 'sqlpackage'])
+        new Option('-t, --Target <name>', 'target application')
+            .choices(['msbuild', 'sqlpackage', 'sqlcmd'])
             .default('msbuild')
     )
     .addOption(
