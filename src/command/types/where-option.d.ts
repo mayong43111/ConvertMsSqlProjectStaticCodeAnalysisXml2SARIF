@@ -2,7 +2,7 @@ export interface WhereOption {
 
     VsWhere?: string;
 
-    ExeType?: string;
+    Target?: string;
 
     VsVersion?: string;
 
@@ -13,7 +13,7 @@ export interface PostWhereOption {
 
     VsWhere: string;
 
-    ExeType: string;
+    Target: string;
 
     VsVersion: string;
 

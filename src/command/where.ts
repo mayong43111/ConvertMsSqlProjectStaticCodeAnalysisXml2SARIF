@@ -14,15 +14,18 @@ export function appWhere(options?: WhereOption, callback?: (pathString: string) 
 
     let findApplicationPath: toolsFinder;
 
-    switch (opt.ExeType) {
+    switch (opt.Target) {
         case 'msbuild':
             findApplicationPath = findMsBuild;
             break;
         case 'sqlpackage':
             findApplicationPath = findSqlpackage;
             break;
+        case 'sqlcmd':
+            findApplicationPath = findSqlcmd;
+            break;
         default:
-            console.error('only for msbuild.exe or sqlpackage.exe')
+            console.error('Not implemented')
             return;
     }
 
@@ -48,15 +51,16 @@ function checkAndPostOptions(options?: WhereOption): PostWhereOption | null {
         return null
     }
 
-    options.ExeType = options.ExeType || 'msbuild';
-    options.ExeType = options.ExeType.toLowerCase();
+    options.Target = options.Target || 'msbuild';
+    options.Target = options.Target.toLowerCase();
 
-    switch (options.ExeType) {
+    switch (options.Target) {
         case 'msbuild':
         case 'sqlpackage':
+        case 'sqlcmd':
             break;
         default:
-            console.error('only for msbuild.exe or sqlpackage.exe')
+            console.error('only for msbuild.exe, sqlpackage.exe or sqlcmd.exe')
             return null;
     }
 
@@ -72,7 +76,7 @@ function checkAndPostOptions(options?: WhereOption): PostWhereOption | null {
 
     return {
         VsWhere: options.VsWhere,
-        ExeType: options.ExeType,
+        Target: options.Target,
         VsVersion: options.VsVersion,
         Arch: options.Arch
     };
@@ -119,15 +123,17 @@ function findSqlpackage(opt: PostWhereOption, callback?: (pathString: string) =>
 
             if (programFilesPath) {
 
-                toolPath = path.join(
-                    programFilesPath,
-                    'Microsoft SQL Server\\160\\DAC\\binSqlPackage.exe');
+                const versions = ['160', '150'];
 
-                if (!fs.existsSync(toolPath)) {
+                for (let i = 0; i < versions.length; i++) {
 
                     toolPath = path.join(
                         programFilesPath,
-                        'Microsoft SQL Server\\150\\DAC\\binSqlPackage.exe');
+                        `Microsoft SQL Server\\${versions[i]}\\DAC\\bin\\SqlPackage.exe`);
+
+                    if (fs.existsSync(toolPath)) {
+                        break;
+                    }
                 }
             }
         }
@@ -164,3 +170,33 @@ function findInstallationPath(opt: PostWhereOption, success: (installationPath: 
         });
 }
 
+function findSqlcmd(opt: PostWhereOption, callback?: (pathString: string) => void): void {
+
+    const programFilesPath = process.env['ProgramFiles'];
+    let toolPath = '';
+
+    if (programFilesPath) {
+
+        const versions = ['170'];
+
+        for (let i = 0; i < versions.length; i++) {
+
+            toolPath = path.join(
+                programFilesPath,
+                `Microsoft SQL Server\\Client SDK\\ODBC\\${versions[i]}\\Tools\\Binn\\SQLCMD.EXE`);
+
+            if (fs.existsSync(toolPath)) {
+                break;
+            }
+        }
+    }
+
+    if (toolPath && fs.existsSync(toolPath)) {
+        if (callback) {
+            callback(toolPath);
+        }
+        console.log(toolPath)
+    } else {
+        console.error('the tool cannot be found.')
+    }
+}
