@@ -61,8 +61,7 @@ function checkAndPostOptions(options?: ConvertOption): PostConvertOption | null 
     if (!options.OutfilePath) {
         options.OutfilePath = path.join(path.dirname(options.SourcePath), path.basename(options.SourcePath, '.xml')) + '.sarif';
     } else if (path.extname(options.OutfilePath).toLowerCase() != '.sarif') {
-        console.error(`${options.OutfilePath} extname is not sarif.`)
-        return null;
+        options.OutfilePath = path.join(options.OutfilePath, path.basename(options.SourcePath, '.xml')) + '.sarif';
     }
 
     return {

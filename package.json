@@ -47,6 +47,7 @@
   "dependencies": {
     "@actions/exec": "^1.1.0",
     "commander": "^9.0.0",
+    "iconv-lite": "^0.6.3",
     "xml2js": "^0.4.23"
   }
 }
