@@ -19,7 +19,7 @@ export function convertMsBuildXml(data: Buffer, success?: (content: Sarif) => vo
             } else if (!(res.Problems.Problem instanceof Array)) {
                 problems = [res.Problems.Problem];
             } else {
-                problems = [];
+                problems = res.Problems.Problem;
             }
 
             analysisProblems(result, problems);

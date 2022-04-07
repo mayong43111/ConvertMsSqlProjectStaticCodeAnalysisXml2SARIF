@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Problems>
+  <Problem>
+    <Rule>TSQL.Design.SRD0001</Rule>
+    <ProblemDescription>No Primary Key was found in [dbo].[Countries].</ProblemDescription>
+    <SourceFile>[dbo].[Countries]</SourceFile>
+    <Line>1</Line>
+    <Column>1</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>Microsoft.Rules.Data.SR0009</Rule>
+    <ProblemDescription>Avoid NVARCHAR of only one element.</ProblemDescription>
+    <SourceFile>[dbo].[Users]</SourceFile>
+    <Line>3</Line>
+    <Column>19</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+  <Problem>
+    <Rule>TSQL.Design.SRD0001</Rule>
+    <ProblemDescription>No Primary Key was found in [dbo].[Users].</ProblemDescription>
+    <SourceFile>[dbo].[Users]</SourceFile>
+    <Line>1</Line>
+    <Column>1</Column>
+    <Severity>Warning</Severity>
+  </Problem>
+</Problems>
