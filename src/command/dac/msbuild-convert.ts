@@ -1,3 +1,4 @@
+import { pathToFileURL } from 'url';
 import { parseString } from 'xml2js';
 import { Artifact, ReportingDescriptor, Run, Sarif } from '../sarif/sarif2';
 import { CodeAnalysisResult, Problem } from './CodeAnalysisResult';
@@ -65,7 +66,7 @@ function analysisProblems(result: Sarif, problems: Problem[]) {
         const ruleId = problems[i].Rule;
         const ruleIndex = findOrCreateRule(rules, ruleId);
 
-        const sourceFile = problems[i].SourceFile;
+        const sourceFile = pathToFileURL(problems[i].SourceFile).toString();
         const artifactIndex = findOrCreateArtifact(artifacts, sourceFile);
 
         const level = findLevel(ruleId);
