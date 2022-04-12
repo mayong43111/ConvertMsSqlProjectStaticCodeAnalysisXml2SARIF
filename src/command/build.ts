@@ -5,16 +5,17 @@ import iconv from 'iconv-lite';
 import { BuildOption, PostBuildOption } from "./types/build-option";
 import { WhereOption } from "./types/where-option";
 import { appWhere } from "./where";
+import { generateFullNameWithNumber } from "./unit";
 
-export function build(options?: BuildOption, callback?: (dacpacPath: string, analysisResultPath: string) => void): void {
+export function build(options?: BuildOption, callback?: (dacpacPath: string[], analysisResultPath: string[]) => void): void {
 
     const opt = checkAndPostOptions(options);
     if (!opt) {
         return;
     }
 
-    let dacpacPath = '';
-    let analysisResultPath = '';
+    const dacpacPath: string[] = [];
+    const analysisResultPath: string[] = [];
 
     const whereOpts = generateWhereOptions(opt);
     appWhere(whereOpts, msbuild => {
@@ -33,7 +34,7 @@ export function build(options?: BuildOption, callback?: (dacpacPath: string, ana
                     const matchr = data.match(/(?<=->\s{1}).*(?<=\.dacpac)/g);
 
                     if (matchr && matchr[0]) {
-                        dacpacPath = matchr[0];
+                        dacpacPath.push(matchr[0]);
                     }
                 }
 
@@ -41,7 +42,7 @@ export function build(options?: BuildOption, callback?: (dacpacPath: string, ana
                     const matchr = data.match(/(?<=The results are saved in ).*(?<=\.StaticCodeAnalysis\.Results\.xml)/g);
 
                     if (matchr && matchr[0]) {
-                        analysisResultPath = matchr[0];
+                        analysisResultPath.push(matchr[0]);
                     }
                 }
 
@@ -51,27 +52,32 @@ export function build(options?: BuildOption, callback?: (dacpacPath: string, ana
 
         exec(`"${msbuild}" ${command}`, [], options)
             .then(res => {
-                if (res == 0 && fs.existsSync(dacpacPath)) {
 
+                if (res != 0) {
+                    return;
+                }
+
+                dacpacPath.forEach((dac, index) => {
                     if (opt.OutfilePath) {
-                        fs.copyFile(dacpacPath, opt.OutfilePath, () => {
-                            console.log(`the dacpac file path: ${opt.OutfilePath || ''}`);
+                        const fullName = generateFullNameWithNumber(opt.OutfilePath, '.dacpac', index, path.basename(dac));
+                        fs.copyFile(dac, fullName, () => {
+                            console.log(`the dacpac file path: ${fullName}`);
                         });
                     } else {
-                        console.log(`the dacpac file path: ${dacpacPath}`);
+                        console.log(`the dacpac file path: ${dac}`);
                     }
-                }
+                });
 
-                if (res == 0 && fs.existsSync(analysisResultPath)) {
-
+                analysisResultPath.forEach((report, index) => {
                     if (opt.analysisResultPath) {
-                        fs.copyFile(analysisResultPath, opt.analysisResultPath, () => {
-                            console.log(`the static analysis result file path: ${opt.analysisResultPath || ''}`);
+                        const fullName = generateFullNameWithNumber(opt.analysisResultPath, '.xml', index, path.basename(report));
+                        fs.copyFile(report, fullName, () => {
+                            console.log(`the static analysis result file path: ${fullName}`);
                         });
                     } else {
-                        console.log(`the static analysis result file path: ${analysisResultPath}`);
+                        console.log(`the static analysis result file path: ${report}`);
                     }
-                }
+                });
 
                 if (callback) {
                     callback(dacpacPath, analysisResultPath);
@@ -110,25 +116,13 @@ function checkAndPostOptions(options?: BuildOption): PostBuildOption | null {
         return null;
     }
 
-    if (options.OutfilePath) {
-        if (!path.isAbsolute(options.OutfilePath)) {
-            options.OutfilePath = path.resolve(options.OutfilePath);
-        }
-
-        //out file path is folder equal isDir
-        if (path.extname(options.OutfilePath).toLowerCase() !== '.dacpac') {
-            options.OutfilePath = path.join(options.OutfilePath, path.basename(options.SourcePath, '.sqlproj')) + '.dacpac';
-        }
+    if (options.OutfilePath && !path.isAbsolute(options.OutfilePath)) {
+        options.OutfilePath = path.resolve(options.OutfilePath);
     }
 
     if (options.analysisResultPath) {
         if (!path.isAbsolute(options.analysisResultPath)) {
             options.analysisResultPath = path.resolve(options.analysisResultPath);
-        }
-
-        //out file path is folder， equal isDir
-        if (path.extname(options.analysisResultPath).toLowerCase() !== '.dacpac') {
-            options.analysisResultPath = path.join(options.analysisResultPath, path.basename(options.SourcePath, '.sqlproj')) + '.xml';
         }
     }
 

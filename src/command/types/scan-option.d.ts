@@ -15,7 +15,7 @@ export interface PostScanOption {
 
     Arguments?: string;
 
-    OutfilePath?: string;
+    OutfilePath: string;
 
     VsVersion: string;
 }

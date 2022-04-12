@@ -11,15 +11,7 @@ export function convert(options?: ConvertOption): void {
     if (!opt) {
         return;
     }
-
-    fs.rm(opt.OutfilePath, { force: true }, (err) => {
-
-        if (!err) {
-            convertFileToSARIF(opt);
-        } else {
-            console.error(err);
-        }
-    });
+    convertFileToSARIF(opt);
 }
 
 function checkAndPostOptions(options?: ConvertOption): PostConvertOption | null {
@@ -106,14 +98,23 @@ function saveSARIF(sarif: Sarif, opt: PostConvertOption) {
         const dir = path.dirname(opt.OutfilePath);
         if (!fs.existsSync(dir)) {
             fs.mkdir(dir, { recursive: true }, () => {
-                fs.writeFile(opt.OutfilePath, content, { encoding: 'utf-8' }, () => {
-                    console.log(`${opt.OutfilePath} were generated`);
-                });
+                writeFile(opt.OutfilePath, content);
             })
+        } else {
+            writeFile(opt.OutfilePath, content);
         }
     } else {
         console.error(`No files were generated.`);
     }
+}
+
+function writeFile(path: string, content: string) {
+
+    fs.rm(path, { force: true }, () => {
+        fs.writeFile(path, content, { encoding: 'utf-8' }, () => {
+            console.log(`${path} were generated`);
+        });
+    });
 }
 
 

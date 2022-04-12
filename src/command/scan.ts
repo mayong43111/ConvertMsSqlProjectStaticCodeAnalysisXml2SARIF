@@ -4,6 +4,7 @@ import { PostScanOption, ScanOption } from "./types/scan-option";
 import { BuildOption } from "./types/build-option";
 import { build } from "./build";
 import { convert } from "./convert";
+import { generateFullNameWithNumber } from "./unit";
 
 export function scan(options?: ScanOption): void {
 
@@ -18,13 +19,17 @@ export function scan(options?: ScanOption): void {
         VsVersion: opt.VsVersion
     }
 
-    build(msbuildOpts, (_, xmlPath) => {
+    build(msbuildOpts, (_, xmls) => {
 
-        if (xmlPath && fs.existsSync(xmlPath)) {
-            convert({
-                SourcePath: xmlPath,
-                OutfilePath: opt.OutfilePath,
-                SourceFormat: 'msbuild'
+        if (xmls && xmls.length > 0) {
+
+            xmls.forEach((report, index) => {
+                const fullName = generateFullNameWithNumber(opt.OutfilePath, '.sarif', index, path.basename(report, '.xml'));
+                convert({
+                    SourcePath: report,
+                    OutfilePath: fullName,
+                    SourceFormat: 'msbuild'
+                });
             });
         } else {
             console.warn(`the static analysis result file not found`);
@@ -59,15 +64,12 @@ function checkAndPostOptions(options?: ScanOption): PostScanOption | null {
         return null;
     }
 
-    if (options.OutfilePath) {
-        if (!path.isAbsolute(options.OutfilePath)) {
-            options.OutfilePath = path.resolve(options.OutfilePath);
-        }
+    if (options.OutfilePath && !path.isAbsolute(options.OutfilePath)) {
+        options.OutfilePath = path.resolve(options.OutfilePath);
+    }
 
-        //out file path is folder equal isDir
-        if (path.extname(options.OutfilePath).toLowerCase() !== '.sarif') {
-            options.OutfilePath = path.join(options.OutfilePath, path.basename(options.SourcePath, '.sqlproj')) + '.sarif';
-        }
+    if (!options.OutfilePath) {
+        options.OutfilePath = path.dirname(options.SourcePath);
     }
 
     options.VsVersion = options.VsVersion || 'latest';
