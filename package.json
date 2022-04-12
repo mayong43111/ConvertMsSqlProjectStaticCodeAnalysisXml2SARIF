@@ -1,6 +1,6 @@
 {
   "name": "sqlproj-analysis-cli",
-  "version": "0.0.9",
+  "version": "0.0.11",
   "description": "",
   "bin": {
     "sqlproj-analysis": "dist/sqlproj-analysis.js"
@@ -8,12 +8,14 @@
   "scripts": {
     "eslint": "eslint",
     "lint": "eslint src/command -f @microsoft/eslint-formatter-sarif -o ./dist/command.sarif",
-    "clean": "rimraf ./dist",
+    "clean": "rimraf ./dist && rimraf ./lib",
     "clean:release": "rimraf ./release",
     "compile": "webpack --mode production",
     "compile:dev": "webpack --mode development",
     "pkg": "pkg . --out-path=release/",
+    "copy:lib": "copyfiles -f ./dist/action.js ./lib",
     "build": "npm run clean && npm run compile",
+    "postbuild": "npm run copy:lib",
     "build:dev": "npm run clean && npm run compile:dev",
     "release": "npm run clean:release && npm run build && npm run pkg",
     "generate:SARIF": "json2ts ./src/command/sarif/sarif2.schema.json ./src/command/sarif/sarif2.d.ts"
@@ -35,6 +37,7 @@
     "@types/xml2js": "^0.4.9",
     "@typescript-eslint/eslint-plugin": "^5.14.0",
     "@typescript-eslint/parser": "^5.14.0",
+    "copyfiles": "^2.4.1",
     "eslint": "^7.32.0",
     "json-schema-to-typescript": "^10.1.5",
     "pkg": "^5.5.2",
@@ -45,7 +48,9 @@
     "webpack-cli": "^4.9.2"
   },
   "dependencies": {
+    "@actions/core": "^1.6.0",
     "@actions/exec": "^1.1.0",
+    "@actions/github": "^5.0.1",
     "commander": "^9.0.0",
     "iconv-lite": "^0.6.3",
     "xml2js": "^0.4.23"

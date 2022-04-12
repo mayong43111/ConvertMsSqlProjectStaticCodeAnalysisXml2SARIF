@@ -2,12 +2,15 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-    entry: './src/command/main.ts',
+    entry: {
+        'sqlproj-analysis': './src/command/sqlproj-analysis.ts',
+        'action': './src/action/action.ts'
+    },
     target: 'node',
     devtool: 'source-map',
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: "sqlproj-analysis.js"
+        filename: "[name].js"
     },
     resolve: {
         extensions: [".ts", ".tsx", ".js"]
