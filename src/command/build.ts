@@ -25,7 +25,7 @@ export function build(options?: BuildOption, callback?: (dacpacPath: string[], a
             command += ` ${opt.Arguments}`
         }
 
-        const options: ExecOptions = { silent: true }
+        const options: ExecOptions = { silent: true, failOnStdErr: true }
         options.listeners = {
             stdout: (stdout: Buffer) => {
                 const data = iconv.decode(stdout, 'cp936')
@@ -84,7 +84,8 @@ export function build(options?: BuildOption, callback?: (dacpacPath: string[], a
                 }
             })
             .catch(reason => {
-                console.error(reason)
+                console.error(reason);
+                process.exit(1);
             });
 
     });
