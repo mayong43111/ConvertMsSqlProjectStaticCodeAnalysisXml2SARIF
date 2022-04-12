@@ -103,9 +103,14 @@ function saveSARIF(sarif: Sarif, opt: PostConvertOption) {
     if (sarif) {
         const content = JSON.stringify(sarif);
 
-        fs.writeFile(opt.OutfilePath, content, { encoding: 'utf-8' }, () => {
-            console.log(`${opt.OutfilePath} were generated`);
-        });
+        const dir = path.dirname(opt.OutfilePath);
+        if (!fs.existsSync(dir)) {
+            fs.mkdir(dir, { recursive: true }, () => {
+                fs.writeFile(opt.OutfilePath, content, { encoding: 'utf-8' }, () => {
+                    console.log(`${opt.OutfilePath} were generated`);
+                });
+            })
+        }
     } else {
         console.error(`No files were generated.`);
     }
