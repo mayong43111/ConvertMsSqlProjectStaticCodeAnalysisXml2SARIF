@@ -54,7 +54,7 @@ export function build(options?: BuildOption, callback?: (dacpacPath: string[], a
             .then(res => {
 
                 if (res != 0) {
-                    return;
+                    throw 'build failed.';
                 }
 
                 dacpacPath.forEach((dac, index) => {
