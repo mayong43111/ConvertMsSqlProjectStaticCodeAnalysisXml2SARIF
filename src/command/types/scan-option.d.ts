@@ -1,4 +1,4 @@
-export interface BuildOption {
+export interface ScanOption {
 
     SourcePath?: string;
 
@@ -6,20 +6,16 @@ export interface BuildOption {
 
     OutfilePath?: string;
 
-    analysisResultPath?: string;
-
     VsVersion?: string;
 }
 
-export interface PostBuildOption {
+export interface PostScanOption {
 
     SourcePath: string;
 
     Arguments?: string;
 
     OutfilePath?: string;
-
-    analysisResultPath?: string;
 
     VsVersion: string;
 }
