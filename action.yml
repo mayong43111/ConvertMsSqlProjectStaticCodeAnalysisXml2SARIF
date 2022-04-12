@@ -13,4 +13,4 @@ inputs:
     required: false
 runs:
   using: "node16"
-  main: "lib/sqlproj-analysis.js"
+  main: "lib/sqlproj-analysis.js scan -s ${{inputs.source-path}} -o ${{inputs.outfile-path}} -a ${{inputs.msubild-arguments}}"
