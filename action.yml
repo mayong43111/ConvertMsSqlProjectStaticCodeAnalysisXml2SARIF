@@ -4,13 +4,13 @@ inputs:
   source-path:
     description: "Path of the SQL project."
     required: true
+  outfile-path:
+    description: "Path of scan result file"
+    required: false
   msubild-arguments:
     description: "msbuild argumnets."
     default: "-t:rebuild /p:RunSqlCodeAnalysis=True /p:SqlCodeAnalysisRules=''"
     required: false
-  outfile-path:
-    description: "Path of scan result file"
-    required: false
 runs:
   using: "node16"
-  main: "lib/sqlproj-analysis.js scan -s ${{inputs.source-path}} -o ${{inputs.outfile-path}} -a ${{inputs.msubild-arguments}}"
+  main: "lib/action.js"
