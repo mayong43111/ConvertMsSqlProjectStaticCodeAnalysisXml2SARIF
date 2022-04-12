@@ -45,7 +45,7 @@ function checkAndPostOptions(options?: ScanOption): PostScanOption | null {
         return null;
     }
 
-    if (path.extname(options.SourcePath).toLowerCase() != '.sqlproj') {
+    if (!['.sqlproj', 'sln'].includes(path.extname(options.SourcePath).toLowerCase())) {
         console.error(`${options.SourcePath} extname is not sqlproj.`)
         return null
     }

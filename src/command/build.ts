@@ -30,7 +30,7 @@ export function build(options?: BuildOption, callback?: (dacpacPath: string, ana
                 const data = iconv.decode(stdout, 'cp936')
 
                 if (data.startsWith('SqlPrepareForRun:')) {
-                    const matchr = data.match(/(?<=->\s{1}).*/g);
+                    const matchr = data.match(/(?<=->\s{1}).*(?<=\.dacpac)/g);
 
                     if (matchr && matchr[0]) {
                         dacpacPath = matchr[0];
@@ -96,7 +96,7 @@ function checkAndPostOptions(options?: BuildOption): PostBuildOption | null {
         return null;
     }
 
-    if (path.extname(options.SourcePath).toLowerCase() != '.sqlproj') {
+    if (!['.sqlproj', 'sln'].includes(path.extname(options.SourcePath).toLowerCase())) {
         console.error(`${options.SourcePath} extname is not sqlproj.`)
         return null
     }
