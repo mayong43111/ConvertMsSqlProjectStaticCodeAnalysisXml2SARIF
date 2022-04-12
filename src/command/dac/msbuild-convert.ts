@@ -110,7 +110,7 @@ function findOrCreateRule(rules: ReportingDescriptor[], ruleId: string, descript
 
     const index = rules.length;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const newRule: ReportingDescriptor = FindRuleById(ruleId);
+    const newRule: ReportingDescriptor = FindRuleById(ruleId, description);
     rules.push(newRule);
 
     return index;

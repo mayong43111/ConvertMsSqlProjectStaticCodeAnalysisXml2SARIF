@@ -1,4 +1,4 @@
-import path, { join } from "path";
+import path from "path";
 
 export function generateFullNameWithNumber(targetPath: string, extname: string, index: number, defaultBaseName: string): string {
 
