@@ -1,0 +1,16 @@
+name: "SQL Project Analysis Action"
+description: "analysis a database project using msbuild code scan"
+inputs:
+  source-path:
+    description: "Path of the SQL project."
+    required: true
+  msubild-arguments:
+    description: "msbuild argumnets."
+    default: "-t:rebuild /p:RunSqlCodeAnalysis=True /p:SqlCodeAnalysisRules=''"
+    required: false
+  outfile-path:
+    description: "Path of scan result file"
+    required: false
+runs:
+  using: "node16"
+  main: "lib/sqlproj-analysis.js"

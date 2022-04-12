@@ -64,7 +64,7 @@ function analysisProblems(result: Sarif, problems: Problem[]) {
     for (let i = 0; i < problems.length; i++) {
 
         const ruleId = problems[i].Rule;
-        const ruleIndex = findOrCreateRule(rules, ruleId);
+        const ruleIndex = findOrCreateRule(rules, ruleId, problems[i].ProblemDescription);
 
         const sourceFile = pathToFileURL(problems[i].SourceFile).toString();
         const artifactIndex = findOrCreateArtifact(artifacts, sourceFile);
@@ -98,7 +98,7 @@ function analysisProblems(result: Sarif, problems: Problem[]) {
     }
 }
 
-function findOrCreateRule(rules: ReportingDescriptor[], ruleId: string): number {
+function findOrCreateRule(rules: ReportingDescriptor[], ruleId: string, description?: string): number {
 
     for (let i = 0; i < rules.length; i++) {
 
@@ -138,7 +138,7 @@ function findOrCreateArtifact(artifacts: Artifact[], sourceFile: string): number
     return index;
 }
 
-function FindRuleById(ruleId: string): ReportingDescriptor {
+function FindRuleById(ruleId: string, description?: string): ReportingDescriptor {
 
     for (let i = 0; i < DefaultMsRules.length; i++) {
 
@@ -151,7 +151,7 @@ function FindRuleById(ruleId: string): ReportingDescriptor {
     return {
         id: ruleId,
         shortDescription: {
-            text: 'This is a custom rule.'
+            text: description || 'This is a custom rule.'
         },
         properties: {
             category: 'Microsoft.Custom'

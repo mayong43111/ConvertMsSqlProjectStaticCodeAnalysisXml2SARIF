@@ -1,3 +1,4 @@
+# TODO: Then copy the publish files to the new folder instead of ignoring them  
 .github
 .vscode
 examples
@@ -9,3 +10,4 @@ node_modules
 package-lock.json
 tsconfig.json
 webpack.config.js
+action.yml
