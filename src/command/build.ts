@@ -6,6 +6,8 @@ import { BuildOption, PostBuildOption } from "./types/build-option";
 import { WhereOption } from "./types/where-option";
 import { appWhere } from "./where";
 import { generateFullNameWithNumber } from "./unit";
+import { convertMsBuildWarning } from "./dac/msbuild-convert";
+import { Sarif } from "./sarif/sarif2";
 
 export function build(options?: BuildOption, callback?: (dacpacPath: string[], analysisResultPath: string[]) => void): void {
 
@@ -37,7 +39,9 @@ export function build(options?: BuildOption, callback?: (dacpacPath: string[], a
                     for (let i = 0; i < lines.length; i++) {
                         const row = lines[i];
 
-                        if (opt.CollectWarning && row.includes('Build warning')) {
+                        if (opt.HideStaticCodeAnalysis && row.includes('StaticCodeAnalysis warning')) {
+                            continue;
+                        } else if (opt.CollectWarning && row.includes('warning')) {
                             warnings.push(row);
                             continue;
                         } else {
@@ -67,30 +71,12 @@ export function build(options?: BuildOption, callback?: (dacpacPath: string[], a
                     throw 'build failed.';
                 }
 
-                dacpacPath.forEach((dac, index) => {
-                    if (opt.OutfilePath) {
-                        const fullName = generateFullNameWithNumber(opt.OutfilePath, '.dacpac', index, path.basename(dac, '.dacpac'));
-                        fs.copyFile(dac, fullName, () => {
-                            console.log(`the dacpac file path: ${fullName}`);
-                        });
-                    } else {
-                        console.log(`the dacpac file path: ${dac}`);
-                    }
-                });
-
-                analysisResultPath.forEach((report, index) => {
-                    if (opt.AnalysisResultPath) {
-                        const fullName = generateFullNameWithNumber(opt.AnalysisResultPath, '.xml', index, path.basename(report, '.xml'));
-                        fs.copyFile(report, fullName, () => {
-                            console.log(`the static analysis result file path: ${fullName}`);
-                        });
-                    } else {
-                        console.log(`the static analysis result file path: ${report}`);
-                    }
-                });
+                const dacpacPathr: string[] = generateDacpacResult(dacpacPath, opt);
+                const analysisResultPathr: string[] = generateAnalysisResult(analysisResultPath, opt);
+                generateWarningResult(warnings, opt, dacpacPathr, analysisResultPathr);
 
                 if (callback) {
-                    callback(dacpacPath, analysisResultPath);
+                    callback(dacpacPathr, analysisResultPathr);
                 }
             })
             .catch(reason => {
@@ -99,6 +85,69 @@ export function build(options?: BuildOption, callback?: (dacpacPath: string[], a
             });
 
     });
+}
+
+function generateDacpacResult(dacpacPath: string[], opt: PostBuildOption): string[] {
+    const dacpacPathr: string[] = [];
+
+    dacpacPath.forEach((dac, index) => {
+        if (opt.OutfilePath) {
+            const fullName = generateFullNameWithNumber(opt.OutfilePath, '.dacpac', index, path.basename(dac, '.dacpac'));
+            fs.copyFileSync(dac, fullName);
+            console.log(`the dacpac file path: ${fullName}`);
+            dacpacPathr.push(fullName);
+        } else {
+            console.log(`the dacpac file path: ${dac}`);
+            dacpacPathr.push(dac);
+        }
+    });
+
+    return dacpacPathr;
+}
+
+function generateAnalysisResult(analysisResultPath: string[], opt: PostBuildOption): string[] {
+    const analysisResultPathr: string[] = [];
+
+    analysisResultPath.forEach((report, index) => {
+        if (opt.AnalysisResultPath) {
+            const fullName = generateFullNameWithNumber(opt.AnalysisResultPath, '.xml', index, path.basename(report, '.xml'));
+            fs.copyFileSync(report, fullName);
+            console.log(`the static analysis result file path: ${fullName}`);
+            analysisResultPathr.push(fullName);
+        } else {
+            console.log(`the static analysis result file path: ${report}`);
+            analysisResultPathr.push(report);
+        }
+    });
+
+    return analysisResultPathr;
+}
+
+function generateWarningResult(warnings: string[], opt: PostBuildOption, analysisResultPath: string[], dacpacPath: string[]) {
+
+    let fullName = opt.AnalysisResultPath || opt.OutfilePath;
+    if (!fullName && analysisResultPath.length > 0) {
+        fullName = analysisResultPath[0];
+    }
+    if (!fullName && dacpacPath.length > 0) {
+        fullName = dacpacPath[0];
+    }
+    if (!fullName) { return; }
+
+    if (path.extname(fullName).toLowerCase() == '.xml' || path.extname(fullName).toLowerCase() == '.dacpac') {
+        fullName = path.basename(fullName) + '.sarif';
+    } else {
+        fullName = path.join(fullName, 'warnings.sarif');
+    }
+
+    if (warnings && warnings.length > 0 && opt.AnalysisResultPath) {
+        convertMsBuildWarning(warnings, (content: Sarif) => {
+            if (fullName) {
+                console.log(`the warning result file path: ${fullName}`);
+                fs.writeFileSync(fullName, JSON.stringify(content));
+            }
+        });
+    }
 }
 
 function checkAndPostOptions(options?: BuildOption): PostBuildOption | null {
@@ -149,6 +198,7 @@ function checkAndPostOptions(options?: BuildOption): PostBuildOption | null {
     options.VsVersion = options.VsVersion || 'latest';
 
     const collectWarning = options.CollectWarning !== false && options.CollectWarning !== 'false';
+    const hideStaticCodeAnalysis = options.HideStaticCodeAnalysis !== false && options.HideStaticCodeAnalysis !== 'false';
 
     return {
         SourcePath: options.SourcePath,
@@ -156,6 +206,7 @@ function checkAndPostOptions(options?: BuildOption): PostBuildOption | null {
         OutfilePath: options.OutfilePath,
         AnalysisResultPath: options.AnalysisResultPath,
         CollectWarning: collectWarning,
+        HideStaticCodeAnalysis: hideStaticCodeAnalysis,
         VsVersion: options.VsVersion
     }
 }

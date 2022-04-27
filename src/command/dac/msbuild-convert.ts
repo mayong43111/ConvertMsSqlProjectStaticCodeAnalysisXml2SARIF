@@ -32,6 +32,70 @@ export function convertMsBuildXml(data: Buffer, success?: (content: Sarif) => vo
     });
 }
 
+export function convertMsBuildWarning(warnings: string[], success?: (content: Sarif) => void) {
+    const result = generateNewSARIF();
+    const run: Run = result.runs[0];
+    // eslint-disable-next-line  
+    const rules: ReportingDescriptor[] = run.tool.driver.rules!;
+    // eslint-disable-next-line  
+    const artifacts: Artifact[] = run.artifacts!;
+
+    const alerts: { [key: string]: string } = {};
+
+    for (let i = 0; i < warnings.length; i++) {
+        const warn = warnings[i];
+
+        const matchs = warn.match(/^(\s*[0-9]+>)?(?<path>.*)\((?<location>[0-9,]*)\).*(warning )(?<ruleId>[A-Za-z0-9]+): (?<description>.*\]\.)/);
+        if (matchs && matchs.groups) {
+            const ruleId = matchs.groups['ruleId']?.trim();
+            const path = matchs.groups['path']?.trim();
+            const location = matchs.groups['location']?.trim();
+            const description = matchs.groups['description']?.trim();
+
+            if (!ruleId || !path || !description || !location) { continue; }
+
+            const locations = location.split(',');
+            if (locations.length != 4) { continue; }
+
+            const key = `${ruleId}_${path}_${location}`;
+            if (alerts[key]) { continue; }
+            alerts[key] = warn;
+
+            const ruleIndex = findOrCreateRule(rules, ruleId, 'This is msbuild warning.');
+            const artifactIndex = findOrCreateArtifact(artifacts, path);
+
+            run.results?.push(
+                {
+                    level: 'warning',
+                    message: {
+                        text: description
+                    },
+                    locations: [
+                        {
+                            physicalLocation: {
+                                artifactLocation: {
+                                    uri: pathToFileURL(path).toString(),
+                                    index: artifactIndex
+                                },
+                                region: {
+                                    startLine: Number(locations[0]),
+                                    startColumn: Number(locations[1])
+                                }
+                            }
+                        }
+                    ],
+                    ruleId: ruleId,
+                    ruleIndex: ruleIndex
+                }
+            )
+        }
+    }
+
+    if (success) {
+        success(result);
+    }
+}
+
 function generateNewSARIF(): Sarif {
 
     return {
@@ -96,9 +160,10 @@ function analysisProblems(result: Sarif, problems: Problem[]) {
                     ruleIndex: ruleIndex
                 }
             )
-        } else {
-            console.warn(`Invalid logs: ${JSON.stringify(problem)}`);
         }
+        //  else {
+        //     console.warn(`Invalid logs: ${JSON.stringify(problem)}`);
+        // }
     }
 }
 

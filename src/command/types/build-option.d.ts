@@ -10,6 +10,8 @@ export interface BuildOption {
 
     CollectWarning?: boolean | string;
 
+    HideStaticCodeAnalysis?: boolean | string;
+
     VsVersion?: string;
 }
 
@@ -24,6 +26,8 @@ export interface PostBuildOption {
     AnalysisResultPath?: string;
 
     CollectWarning: boolean;
+
+    HideStaticCodeAnalysis: boolean | string;
 
     VsVersion: string;
 }
