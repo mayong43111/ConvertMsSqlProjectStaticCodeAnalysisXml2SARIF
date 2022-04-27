@@ -62,39 +62,43 @@ function analysisProblems(result: Sarif, problems: Problem[]) {
     const artifacts: Artifact[] = run.artifacts!;
 
     for (let i = 0; i < problems.length; i++) {
-
-        const ruleId = problems[i].Rule;
-        const ruleIndex = findOrCreateRule(rules, ruleId, problems[i].ProblemDescription);
-
-        const sourceFile = pathToFileURL(problems[i].SourceFile).toString();
-        const artifactIndex = findOrCreateArtifact(artifacts, sourceFile);
-
+        const problem = problems[i];
+        const ruleId = problem.Rule;
+        const sourceFile = pathToFileURL(problem.SourceFile).toString();
         const level = findLevel(ruleId);
 
-        run.results?.push(
-            {
-                level: level,
-                message: {
-                    text: problems[i].ProblemDescription
-                },
-                locations: [
-                    {
-                        physicalLocation: {
-                            artifactLocation: {
-                                uri: sourceFile,
-                                index: artifactIndex
-                            },
-                            region: {
-                                startLine: Number(problems[i].Line),
-                                startColumn: Number(problems[i].Column)
+        if (ruleId && sourceFile && problem.Line > 0 && problem.Column > 0) {
+
+            const ruleIndex = findOrCreateRule(rules, ruleId, problem.ProblemDescription);
+            const artifactIndex = findOrCreateArtifact(artifacts, sourceFile);
+
+            run.results?.push(
+                {
+                    level: level,
+                    message: {
+                        text: problem.ProblemDescription
+                    },
+                    locations: [
+                        {
+                            physicalLocation: {
+                                artifactLocation: {
+                                    uri: sourceFile,
+                                    index: artifactIndex
+                                },
+                                region: {
+                                    startLine: Number(problem.Line),
+                                    startColumn: Number(problem.Column)
+                                }
                             }
                         }
-                    }
-                ],
-                ruleId: problems[i].Rule,
-                ruleIndex: ruleIndex
-            }
-        )
+                    ],
+                    ruleId: problem.Rule,
+                    ruleIndex: ruleIndex
+                }
+            )
+        } else {
+            console.warn(`Invalid logs: ${JSON.stringify(problem)}`);
+        }
     }
 }
 
