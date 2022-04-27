@@ -70,14 +70,15 @@ export function build(options?: BuildOption, callback?: (dacpacPath: string[], a
         };
 
         exec(`"${msbuild}" ${command}`, [], options)
-            .then(res => {
+            .then(async res => {
 
                 if (res != 0) {
                     throw 'build failed.';
                 }
 
-                const dacpacPathr: string[] = generateDacpacResult(dacpacPath, opt);
-                const analysisResultPathr: string[] = generateAnalysisResult(analysisResultPath, opt);
+                const dacpacPathr: string[] = await generateDacpacResult(dacpacPath, opt);
+                const analysisResultPathr: string[] = await generateAnalysisResult(analysisResultPath, opt);
+
                 generateWarningResult(warnings, opt, dacpacPathr, analysisResultPathr);
 
                 if (callback) {
@@ -92,39 +93,46 @@ export function build(options?: BuildOption, callback?: (dacpacPath: string[], a
     });
 }
 
-function generateDacpacResult(dacpacPath: string[], opt: PostBuildOption): string[] {
+async function generateDacpacResult(dacpacPath: string[], opt: PostBuildOption): Promise<string[]> {
     const dacpacPathr: string[] = [];
+    const promises: Promise<void>[] = [];
 
     dacpacPath.forEach((dac, index) => {
         if (opt.OutfilePath && fs.existsSync(dac)) {
             const fullName = generateFullNameWithNumber(opt.OutfilePath, '.dacpac', index, path.basename(dac, '.dacpac'));
-            fs.copyFileSync(dac, fullName);
-            console.log(`the dacpac file path: ${fullName}`);
-            dacpacPathr.push(fullName);
+            promises.push(fs.promises.copyFile(dac, fullName).then(() => {
+                console.log(`the dacpac file path: ${fullName}`);
+                dacpacPathr.push(fullName);
+            }));
         } else {
             console.log(`the dacpac file path: ${dac}`);
             dacpacPathr.push(dac);
         }
     });
 
+    await Promise.all(promises);
     return dacpacPathr;
 }
 
-function generateAnalysisResult(analysisResultPath: string[], opt: PostBuildOption): string[] {
+async function generateAnalysisResult(analysisResultPath: string[], opt: PostBuildOption): Promise<string[]> {
     const analysisResultPathr: string[] = [];
+    const promises: Promise<void>[] = [];
 
     analysisResultPath.forEach((report, index) => {
         if (opt.AnalysisResultPath && fs.existsSync(report)) {
             const fullName = generateFullNameWithNumber(opt.AnalysisResultPath, '.xml', index, path.basename(report, '.xml'));
-            fs.copyFileSync(report, fullName);
-            console.log(`the static analysis result file path: ${fullName}`);
-            analysisResultPathr.push(fullName);
+            promises.push(fs.promises.copyFile(report, fullName).then(() => {
+                console.log(`the static analysis result file path: ${fullName}`);
+                analysisResultPathr.push(fullName);
+            }));
+
         } else {
             console.log(`the static analysis result file path: ${report}`);
             analysisResultPathr.push(report);
         }
     });
 
+    await Promise.all(promises);
     return analysisResultPathr;
 }
 
