@@ -91,7 +91,7 @@ function generateDacpacResult(dacpacPath: string[], opt: PostBuildOption): strin
     const dacpacPathr: string[] = [];
 
     dacpacPath.forEach((dac, index) => {
-        if (opt.OutfilePath) {
+        if (opt.OutfilePath && fs.existsSync(dac)) {
             const fullName = generateFullNameWithNumber(opt.OutfilePath, '.dacpac', index, path.basename(dac, '.dacpac'));
             fs.copyFileSync(dac, fullName);
             console.log(`the dacpac file path: ${fullName}`);
@@ -109,7 +109,7 @@ function generateAnalysisResult(analysisResultPath: string[], opt: PostBuildOpti
     const analysisResultPathr: string[] = [];
 
     analysisResultPath.forEach((report, index) => {
-        if (opt.AnalysisResultPath) {
+        if (opt.AnalysisResultPath && fs.existsSync(report)) {
             const fullName = generateFullNameWithNumber(opt.AnalysisResultPath, '.xml', index, path.basename(report, '.xml'));
             fs.copyFileSync(report, fullName);
             console.log(`the static analysis result file path: ${fullName}`);
