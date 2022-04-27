@@ -6,7 +6,11 @@ export interface BuildOption {
 
     OutfilePath?: string;
 
-    analysisResultPath?: string;
+    AnalysisResultPath?: string;
+
+    CollectWarning?: boolean | string;
+
+    HideStaticCodeAnalysis?: boolean | string;
 
     VsVersion?: string;
 }
@@ -19,7 +23,11 @@ export interface PostBuildOption {
 
     OutfilePath?: string;
 
-    analysisResultPath?: string;
+    AnalysisResultPath?: string;
+
+    CollectWarning: boolean;
+
+    HideStaticCodeAnalysis: boolean | string;
 
     VsVersion: string;
 }

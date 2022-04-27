@@ -15,6 +15,9 @@ export function scan(options?: ScanOption): void {
 
     const msbuildOpts: BuildOption = {
         SourcePath: opt.SourcePath,
+        OutfilePath: opt.OutfilePath,
+        CollectWarning: true,
+        HideStaticCodeAnalysis: true,
         Arguments: opt.Arguments,
         VsVersion: opt.VsVersion
     }

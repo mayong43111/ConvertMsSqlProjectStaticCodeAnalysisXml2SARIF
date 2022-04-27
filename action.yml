@@ -7,10 +7,10 @@ inputs:
   outfile-path:
     description: "Path of scan result file"
     required: false
-  msubild-arguments:
+  msbuild-arguments:
     description: "msbuild argumnets."
-    default: "-t:rebuild /p:RunSqlCodeAnalysis=True /p:SqlCodeAnalysisRules=''"
+    default: "-t:build,SqlStaticCodeAnalysis /p:RunSqlCodeAnalysis=True /p:SqlCodeAnalysisRules=''"
     required: false
 runs:
-  using: "node16"
+  using: "node12"
   main: "lib/action.js"
