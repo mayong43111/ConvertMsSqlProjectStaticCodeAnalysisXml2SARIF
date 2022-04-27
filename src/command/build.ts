@@ -29,15 +29,20 @@ export function build(options?: BuildOption, callback?: (dacpacPath: string[], a
         }
 
         const options: ExecOptions = { silent: true, failOnStdErr: true }
+        let preStdout = '';
         options.listeners = {
             stdout: (stdout: Buffer) => {
-                const data = iconv.decode(stdout, 'cp936');
-                const lines = data?.split('\r\n');
+                const data = preStdout + iconv.decode(stdout, 'cp936');
+                const lines = data.split('\r\n');
 
                 if (lines) {
-
-                    for (let i = 0; i < lines.length; i++) {
+                    preStdout = lines[lines.length - 1];
+                    for (let i = 0; i < lines.length - 1; i++) {
                         const row = lines[i];
+
+                        if (!row.trim()) {
+                            continue;
+                        }
 
                         if (opt.HideStaticCodeAnalysis && row.includes('StaticCodeAnalysis warning')) {
                             continue;
@@ -135,12 +140,12 @@ function generateWarningResult(warnings: string[], opt: PostBuildOption, analysi
     if (!fullName) { return; }
 
     if (path.extname(fullName).toLowerCase() == '.xml' || path.extname(fullName).toLowerCase() == '.dacpac') {
-        fullName = path.basename(fullName) + '.sarif';
+        fullName = path.join(path.dirname(fullName), 'warnings.sarif');
     } else {
         fullName = path.join(fullName, 'warnings.sarif');
     }
 
-    if (warnings && warnings.length > 0 && opt.AnalysisResultPath) {
+    if (warnings && warnings.length > 0 && fullName) {
         convertMsBuildWarning(warnings, (content: Sarif) => {
             if (fullName) {
                 console.log(`the warning result file path: ${fullName}`);
