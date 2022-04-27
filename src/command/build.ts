@@ -221,6 +221,10 @@ function checkAndPostOptions(options?: BuildOption): PostBuildOption | null {
         }
     }
 
+    if (!options.AnalysisResultPath && options.OutfilePath) {
+        options.AnalysisResultPath = path.join(path.dirname(options.OutfilePath), path.basename(options.OutfilePath, '.dacpac')) + '.xml';
+    }
+
     options.VsVersion = options.VsVersion || 'latest';
 
     const collectWarning = options.CollectWarning !== false && options.CollectWarning !== 'false';
