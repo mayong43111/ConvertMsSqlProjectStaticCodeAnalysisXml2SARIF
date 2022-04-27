@@ -97,9 +97,15 @@ async function generateDacpacResult(dacpacPath: string[], opt: PostBuildOption):
     const dacpacPathr: string[] = [];
     const promises: Promise<void>[] = [];
 
-    dacpacPath.forEach((dac, index) => {
+    for (let index = 0; index < dacpacPath.length; index++) {
+        const dac = dacpacPath[index];
         if (opt.OutfilePath && fs.existsSync(dac)) {
             const fullName = generateFullNameWithNumber(opt.OutfilePath, '.dacpac', index, path.basename(dac, '.dacpac'));
+
+            if (!fs.existsSync(path.dirname(fullName))) {
+                await fs.promises.mkdir(path.dirname(fullName), { recursive: true });
+            }
+
             promises.push(fs.promises.copyFile(dac, fullName).then(() => {
                 console.log(`the dacpac file path: ${fullName}`);
                 dacpacPathr.push(fullName);
@@ -108,7 +114,7 @@ async function generateDacpacResult(dacpacPath: string[], opt: PostBuildOption):
             console.log(`the dacpac file path: ${dac}`);
             dacpacPathr.push(dac);
         }
-    });
+    }
 
     await Promise.all(promises);
     return dacpacPathr;
@@ -118,9 +124,16 @@ async function generateAnalysisResult(analysisResultPath: string[], opt: PostBui
     const analysisResultPathr: string[] = [];
     const promises: Promise<void>[] = [];
 
-    analysisResultPath.forEach((report, index) => {
+    for (let index = 0; index < analysisResultPath.length; index++) {
+        const report = analysisResultPath[index];
+
         if (opt.AnalysisResultPath && fs.existsSync(report)) {
             const fullName = generateFullNameWithNumber(opt.AnalysisResultPath, '.xml', index, path.basename(report, '.xml'));
+
+            if (!fs.existsSync(path.dirname(fullName))) {
+                await fs.promises.mkdir(path.dirname(fullName), { recursive: true });
+            }
+
             promises.push(fs.promises.copyFile(report, fullName).then(() => {
                 console.log(`the static analysis result file path: ${fullName}`);
                 analysisResultPathr.push(fullName);
@@ -130,7 +143,7 @@ async function generateAnalysisResult(analysisResultPath: string[], opt: PostBui
             console.log(`the static analysis result file path: ${report}`);
             analysisResultPathr.push(report);
         }
-    });
+    }
 
     await Promise.all(promises);
     return analysisResultPathr;
