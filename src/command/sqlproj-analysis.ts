@@ -48,7 +48,8 @@ program.command('build')
     .requiredOption('-s, --SourcePath <sqlproj>', '*.sqlproj file path')
     .option('-a, --Arguments <msbuild args>', 'set msbuild args without project file')
     .option('-o, --OutfilePath <path>', 'set the destination path to copy the dacpac file')
-    .option('-r, --analysisResultPath <path>', 'set the destination path to copy the static analysis result file')
+    .option('-r, --AnalysisResultPath <path>', 'set the destination path to copy the static analysis result file')
+    .option('-cw, --CollectWarning <switch>', 'collect warnings to record', false)
     .option('-v, --VsVersion <version>', 'set vs version, not the msbuild toolsversion switches', 'latest')
     .action((options: BuildOption) => { build(options); });
 

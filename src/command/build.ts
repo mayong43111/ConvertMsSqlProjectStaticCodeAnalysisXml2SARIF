@@ -16,6 +16,7 @@ export function build(options?: BuildOption, callback?: (dacpacPath: string[], a
 
     const dacpacPath: string[] = [];
     const analysisResultPath: string[] = [];
+    const warnings: string[] = [];
 
     const whereOpts = generateWhereOptions(opt);
     appWhere(whereOpts, msbuild => {
@@ -28,27 +29,36 @@ export function build(options?: BuildOption, callback?: (dacpacPath: string[], a
         const options: ExecOptions = { silent: true, failOnStdErr: true }
         options.listeners = {
             stdout: (stdout: Buffer) => {
-                const data = iconv.decode(stdout, 'cp936')
+                const data = iconv.decode(stdout, 'cp936');
+                const lines = data?.split('\r\n');
 
-                if (data.startsWith('SqlPrepareForRun:')) {
-                    const matchr = data.match(/(?<=->\s{1}).*(?<=\.dacpac)/g);
+                if (lines) {
 
-                    if (matchr && matchr[0]) {
-                        dacpacPath.push(matchr[0]);
+                    for (let i = 0; i < lines.length; i++) {
+                        const row = lines[i];
+
+                        if (opt.CollectWarning && row.includes('Build warning')) {
+                            warnings.push(row);
+                            continue;
+                        } else {
+                            console.log(row);
+                        }
+
+                        const dacpacMatchr = row.match(/(?<=->\s{1}).*(?<=\.dacpac)/g);
+                        if (dacpacMatchr && dacpacMatchr[0]) {
+                            dacpacPath.push(dacpacMatchr[0]);
+                            continue;
+                        }
+
+                        const xmlMatchr = row.match(/(?<=The results are saved in ).*(?<=\.StaticCodeAnalysis\.Results\.xml)/g);
+                        if (xmlMatchr && xmlMatchr[0]) {
+                            analysisResultPath.push(xmlMatchr[0]);
+                            continue;
+                        }
                     }
                 }
-
-                if (data.startsWith('  The results are saved in')) {
-                    const matchr = data.match(/(?<=The results are saved in ).*(?<=\.StaticCodeAnalysis\.Results\.xml)/g);
-
-                    if (matchr && matchr[0]) {
-                        analysisResultPath.push(matchr[0]);
-                    }
-                }
-
-                console.log(data);
             }
-        }
+        };
 
         exec(`"${msbuild}" ${command}`, [], options)
             .then(res => {
@@ -59,7 +69,7 @@ export function build(options?: BuildOption, callback?: (dacpacPath: string[], a
 
                 dacpacPath.forEach((dac, index) => {
                     if (opt.OutfilePath) {
-                        const fullName = generateFullNameWithNumber(opt.OutfilePath, '.dacpac', index, path.basename(dac));
+                        const fullName = generateFullNameWithNumber(opt.OutfilePath, '.dacpac', index, path.basename(dac, '.dacpac'));
                         fs.copyFile(dac, fullName, () => {
                             console.log(`the dacpac file path: ${fullName}`);
                         });
@@ -69,8 +79,8 @@ export function build(options?: BuildOption, callback?: (dacpacPath: string[], a
                 });
 
                 analysisResultPath.forEach((report, index) => {
-                    if (opt.analysisResultPath) {
-                        const fullName = generateFullNameWithNumber(opt.analysisResultPath, '.xml', index, path.basename(report));
+                    if (opt.AnalysisResultPath) {
+                        const fullName = generateFullNameWithNumber(opt.AnalysisResultPath, '.xml', index, path.basename(report, '.xml'));
                         fs.copyFile(report, fullName, () => {
                             console.log(`the static analysis result file path: ${fullName}`);
                         });
@@ -121,23 +131,31 @@ function checkAndPostOptions(options?: BuildOption): PostBuildOption | null {
         options.OutfilePath = path.resolve(options.OutfilePath);
     }
 
-    if (options.analysisResultPath) {
-        if (!path.isAbsolute(options.analysisResultPath)) {
-            options.analysisResultPath = path.resolve(options.analysisResultPath);
+    if (options.AnalysisResultPath) {
+        if (!path.isAbsolute(options.AnalysisResultPath)) {
+            options.AnalysisResultPath = path.resolve(options.AnalysisResultPath);
         }
     }
 
-    if (!options.analysisResultPath && options.OutfilePath) {
-        options.analysisResultPath = path.join(path.dirname(options.OutfilePath), path.basename(options.OutfilePath, '.dacpac')) + '.xml';
+    if (!options.AnalysisResultPath && options.OutfilePath) {
+
+        if (path.extname(options.OutfilePath).toLowerCase() == '.dacpac') {
+            options.AnalysisResultPath = path.join(path.dirname(options.OutfilePath), path.basename(options.OutfilePath, '.dacpac')) + '.xml';
+        } else {
+            options.AnalysisResultPath = options.OutfilePath;
+        }
     }
 
     options.VsVersion = options.VsVersion || 'latest';
+
+    const collectWarning = options.CollectWarning !== false && options.CollectWarning !== 'false';
 
     return {
         SourcePath: options.SourcePath,
         Arguments: options.Arguments,
         OutfilePath: options.OutfilePath,
-        analysisResultPath: options.analysisResultPath,
+        AnalysisResultPath: options.AnalysisResultPath,
+        CollectWarning: collectWarning,
         VsVersion: options.VsVersion
     }
 }
