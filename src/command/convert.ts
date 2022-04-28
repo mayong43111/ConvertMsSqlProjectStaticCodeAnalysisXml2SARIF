@@ -110,10 +110,8 @@ function saveSARIF(sarif: Sarif, opt: PostConvertOption) {
 
 function writeFile(path: string, content: string) {
 
-    fs.rm(path, { force: true }, () => {
-        fs.writeFile(path, content, { encoding: 'utf-8' }, () => {
-            console.log(`${path} were generated`);
-        });
+    fs.writeFile(path, content, { encoding: 'utf-8' }, () => {
+        console.log(`${path} were generated`);
     });
 }
 

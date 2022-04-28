@@ -4,7 +4,7 @@ import { scan } from '../command/scan';
 try {
     const sourcefile = core.getInput('source-path');
     const outfile = core.getInput('outfile-path');
-    const args = core.getInput('msubild-arguments');
+    const args = core.getInput('msbuild-arguments');
 
     scan({
         SourcePath: sourcefile,
