@@ -62,7 +62,8 @@ export function convertMsBuildWarning(warnings: string[], success?: (content: Sa
             alerts[key] = warn;
 
             const ruleIndex = findOrCreateRule(rules, ruleId, 'This is msbuild warning.');
-            const artifactIndex = findOrCreateArtifact(artifacts, path);
+            const pathURL = pathToFileURL(path).toString()
+            const artifactIndex = findOrCreateArtifact(artifacts, pathURL);
 
             run.results?.push(
                 {
@@ -74,7 +75,7 @@ export function convertMsBuildWarning(warnings: string[], success?: (content: Sa
                         {
                             physicalLocation: {
                                 artifactLocation: {
-                                    uri: pathToFileURL(path).toString(),
+                                    uri: pathURL,
                                     index: artifactIndex
                                 },
                                 region: {
@@ -128,13 +129,14 @@ function analysisProblems(result: Sarif, problems: Problem[]) {
     for (let i = 0; i < problems.length; i++) {
         const problem = problems[i];
         const ruleId = problem.Rule;
-        const sourceFile = pathToFileURL(problem.SourceFile).toString();
+        const sourceFile = problem.SourceFile;
         const level = findLevel(ruleId);
 
         if (ruleId && sourceFile && problem.Line > 0 && problem.Column > 0) {
 
             const ruleIndex = findOrCreateRule(rules, ruleId, problem.ProblemDescription);
-            const artifactIndex = findOrCreateArtifact(artifacts, sourceFile);
+            const sourceFileURL = pathToFileURL(sourceFile).toString();
+            const artifactIndex = findOrCreateArtifact(artifacts, sourceFileURL);
 
             run.results?.push(
                 {
@@ -146,7 +148,7 @@ function analysisProblems(result: Sarif, problems: Problem[]) {
                         {
                             physicalLocation: {
                                 artifactLocation: {
-                                    uri: sourceFile,
+                                    uri: sourceFileURL,
                                     index: artifactIndex
                                 },
                                 region: {
