@@ -31,6 +31,7 @@ program.command('where')
     .description('find msbuild.exe or sqlpackage.exe path, the system must be windows and install vs with SSDT')
     .option('-w, --VsWhere <path>', 'manually set the path of vswhere')
     .option('-v, --VsVersion <version>', 'set vs version', 'latest')
+    .option('-p, --VsProducts <products>', 'set vs product(e.g. *, Microsoft.VisualStudio.Product.BuildTools')
     .addOption(
         new Option('-t, --Target <name>', 'target application')
             .choices(['msbuild', 'sqlpackage', 'sqlcmd'])

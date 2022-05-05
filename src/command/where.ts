@@ -78,6 +78,7 @@ function checkAndPostOptions(options?: WhereOption): PostWhereOption | null {
         VsWhere: options.VsWhere,
         Target: options.Target,
         VsVersion: options.VsVersion,
+        VsProducts: options.VsProducts,
         Arch: options.Arch
     };
 }
@@ -113,9 +114,24 @@ function findMsBuild(opt: PostWhereOption, callback?: (pathString: string) => vo
 function findSqlpackage(opt: PostWhereOption, callback?: (pathString: string) => void): void {
     findInstallationPath(opt, (installationPath => {
 
-        let toolPath = path.join(
-            installationPath,
-            'Common7\\IDE\\Extensions\\Microsoft\\SQLDB\\DAC\\SqlPackage.exe');
+        let toolPath: string = '';
+        if (opt.VsProducts && opt.VsProducts.includes('BuildTools')) {
+            const versions = ['160', '150', '140'];
+
+            for (let i = 0; i < versions.length; i++) {
+                toolPath = path.join(
+                    installationPath,
+                    `Common7\\IDE\\Extensions\\Microsoft\\SQLDB\\DAC\\${versions[i]}\\SqlPackage.exe`);
+
+                if (fs.existsSync(toolPath)) {
+                    break;
+                }
+            }
+        } else {
+            toolPath = path.join(
+                installationPath,
+                'Common7\\IDE\\Extensions\\Microsoft\\SQLDB\\DAC\\SqlPackage.exe');
+        }
 
         if (!fs.existsSync(toolPath)) {
 
@@ -123,7 +139,7 @@ function findSqlpackage(opt: PostWhereOption, callback?: (pathString: string) =>
 
             if (programFilesPath) {
 
-                const versions = ['160', '150'];
+                const versions = ['160', '150', '140'];
 
                 for (let i = 0; i < versions.length; i++) {
 
@@ -152,9 +168,15 @@ function findSqlpackage(opt: PostWhereOption, callback?: (pathString: string) =>
 //I like callback function ? ⊙﹏⊙∥, async/await is not used because of the unified coding style
 function findInstallationPath(opt: PostWhereOption, success: (installationPath: string) => void) {
 
-    let command = '-products * -requires Microsoft.Component.MSBuild -property installationPath -latest '
+    let command = '-requires Microsoft.Component.MSBuild -property installationPath -latest '
     if (opt.VsVersion !== 'latest') {
         command += `-version "${opt.VsVersion}" `
+    }
+
+    if (opt.VsProducts) {
+        command += `-products "${opt.VsProducts}" `
+    } else {
+        command += `-products * `
     }
 
     const options: ExecOptions = { silent: true }

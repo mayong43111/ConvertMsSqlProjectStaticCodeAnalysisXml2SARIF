@@ -6,6 +6,8 @@ export interface WhereOption {
 
     VsVersion?: string;
 
+    VsProducts?: string;
+
     Arch?: string;
 }
 
@@ -16,6 +18,8 @@ export interface PostWhereOption {
     Target: string;
 
     VsVersion: string;
+
+    VsProducts?: string;
 
     Arch: string;
 }
