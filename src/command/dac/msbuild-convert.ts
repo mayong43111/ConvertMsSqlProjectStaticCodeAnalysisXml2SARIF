@@ -61,7 +61,7 @@ export function convertMsBuildWarning(warnings: string[], success?: (content: Sa
             if (alerts[key]) { continue; }
             alerts[key] = warn;
 
-            const ruleIndex = findOrCreateRule(rules, ruleId, 'This is msbuild warning.');
+            const ruleIndex = findOrCreateRule(rules, ruleId, `This is msbuild warning ${ruleId}.`);
             const pathURL = pathToFileURL(path).toString()
             const artifactIndex = findOrCreateArtifact(artifacts, pathURL);
 
@@ -374,6 +374,36 @@ export const DefaultMsRules: ReportingDescriptor[] = [
         helpUri: 'https://docs.microsoft.com/en-us/previous-versions/visualstudio/visual-studio-2010/dd193285(v=vs.100)',
         properties: {
             category: 'Microsoft.Performance'
+        }
+    },
+    {
+        id: 'SQL71502',
+        shortDescription: {
+            text: 'Procedure <name> has an unresolved reference to object <name>.'
+        },
+        helpUri: 'https://cn.bing.com/search?q=SQL71502',
+        properties: {
+            category: 'Microsoft.Warning'
+        }
+    },
+    {
+        id: 'SQL71562',
+        shortDescription: {
+            text: 'Procedure <name> has an unresolved reference to object <name>.'
+        },
+        helpUri: 'https://cn.bing.com/search?q=SQL71562',
+        properties: {
+            category: 'Microsoft.Warning'
+        }
+    },
+    {
+        id: 'SQL71558',
+        shortDescription: {
+            text: 'The object reference <name> differs only by case from the object definition <name>.'
+        },
+        helpUri: 'https://cn.bing.com/search?q=SQL71558',
+        properties: {
+            category: 'Microsoft.Warning'
         }
     }
 ]
